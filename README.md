@@ -5,105 +5,105 @@
 ![Vite](https://img.shields.io/badge/Bundler-Vite-purple)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-A festive Zalo Mini App for **Tet 2026 (Year of the Horse)**. This app uses AI (simulated) to generate stylized Lunar New Year portraits for users.
+Праздничное мини-приложение Zalo для **Тет 2026 (Год Лошади)**. Приложение использует ИИ (имитацию) для создания стилизованных новогодних портретов пользователей.
 
-**Repository**: [https://github.com/aipunkfacility/tet-zalo-app](https://github.com/aipunkfacility/tet-zalo-app)
-
----
-
-## ✨ Features
-
-- **📸 Smart Camera & Upload**:
-  - Take a photo directly within the app.
-  - **[NEW]** Upload existing photos from the device gallery.
-- **🎨 AI Generation**: Transforms user selfies into festive Tet-themed portraits.
-- **🌍 Multi-language Support (i18n)**:
-  - English (EN)
-  - Vietnamese (VN) - *Native support*
-- **💾 Save & Share**:
-  - High-quality image download (Blob/Base64 optimized).
-  - Native Zalo sharing integration.
-- **🛡️ Secure**: Strict Content Security Policy (CSP) and optimized dependency tree.
+**Репозиторий**: [https://github.com/aipunkfacility/tet-zalo-app](https://github.com/aipunkfacility/tet-zalo-app)
 
 ---
 
-## 🛠 Tech Stack
+## ✨ Возможности
+
+- **📸 Умная Камера и Загрузка**:
+  - Съемка фото прямо в приложении.
+  - **[NEW]** Загрузка готовых фото из галереи устройства.
+- **🎨 ИИ Генерация**: Превращает селфи пользователей в праздничные портреты в стиле Тет.
+- **🌍 Мультиязычность (i18n)**:
+  - Английский (EN)
+  - Вьетнамский (VN) - *Основной язык*
+- **💾 Сохранение и Шеринг**:
+  - Скачивание изображений в высоком качестве (оптимизация Blob/Base64).
+  - Интеграция с нативной кнопкой "Поделиться" в Zalo.
+- **🛡️ Безопасность**: Строгая политика Content Security Policy (CSP) и оптимизированные зависимости.
+
+---
+
+## 🛠 Технологический Стек
 
 - **Core**: React 18, TypeScript, ZMP SDK
-- **UI**: ZMP UI (ZaUI), Tailwind CSS, Framer Motion (Animations)
+- **UI**: ZMP UI (ZaUI), Tailwind CSS, Framer Motion (Анимации)
 - **State**: React Context API
 - **I18n**: i18next, react-i18next
 - **Build**: Vite 5
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Как запустить
 
-### Prerequisites
+### Требования
 
 - Node.js >= 18
 - Zalo Mini App CLI (`npm i -g zmp-cli`)
 
-### Installation
+### Установка
 
 ```bash
-# Clone repository
+# Клонирование репозитория
 git clone https://github.com/aipunkfacility/tet-zalo-app.git
 cd tet-zalo-app
 
-# Install dependencies (use npm ci for security)
+# Установка зависимостей (используйте npm ci для надежности)
 npm ci
 ```
 
-### Local Development
+### Локальная разработка
 
 ```bash
-# Start development server
+# Запуск dev-сервера
 npm run dev
 
-# Or using ZMP CLI
+# Или через ZMP CLI
 zmp start
 ```
 
-### Building for Production
+### Сборка для продакшена
 
 ```bash
-# Build optimized assets
+# Сборка оптимизированных ассетов
 npm run build
 
-# Deploy to Zalo Mini App Platform
+# Деплой на платформу Zalo Mini App
 npm run deploy
 ```
 
 ---
 
-## 📂 Project Structure
+## 📂 Структура Проекта
 
 ```
 src/
-├── assets/          # Static assets (images, fonts)
-├── components/      # Reusable UI components
-├── context/         # React Context (State Management)
-├── css/             # Global styles (Tailwind, SASS)
-├── i18n/            # Localization config & translations
-├── modules/         # Feature modules (Camera, Generator, Result)
-├── pages/           # App pages (Router)
-└── app.ts           # Entry point
+├── assets/          # Статика (картинки, шрифты)
+├── components/      # UI компоненты
+├── context/         # React Context (Управление состоянием)
+├── css/             # Глобальные стили (Tailwind, SASS)
+├── i18n/            # Конфигурация переводов
+├── modules/         # Основные модули (Camera, Generator, Result)
+├── pages/           # Страницы (Роутинг)
+└── app.ts           # Точка входа
 ```
 
 ---
 
-## 🔒 Security
+## 🔒 Безопасность
 
-- **CSP**: configured in `index.html` to allow only trusted domains (`zalo.me`, `zdn.vn`).
-- **NPM Audit**: Dependencies are regularly audited for vulnerabilities.
+- **CSP**: Настроен в `index.html`, разрешены только доверенные домены (`zalo.me`, `zdn.vn`).
+- **NPM Audit**: Регулярный аудит уязвимостей зависимостей.
 
 ---
 
-## 👥 Authors
+## 👥 Авторы
 
 - **AI Punk Facility**
 
 ---
 
-© 2026 Tet AI Project. Built with ❤️ for Vietnam.
+© 2026 Tet AI Project. Сделано с ❤️ для Вьетнама.
