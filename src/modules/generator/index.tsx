@@ -14,40 +14,78 @@ const GeneratorModule = () => {
   const { userImage, setGeneratedImage } = useAppContext();
   const { addToHistory } = useHistory();
   const [progress, setProgress] = useState(0);
-  const [hasSaved, setHasSaved] = useState(false);
+  const [isFinishing, setIsFinishing] = useState(false);
+
+  // Helper для сжатия изображения (PNG -> JPG)
+  const compressImage = (base64: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          // Сжимаем до 0.8 качества в JPG
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        } else {
+          resolve(base64); // Fallback
+        }
+      };
+      img.onerror = () => resolve(base64);
+      img.src = base64;
+    });
+  };
 
   useEffect(() => {
-    // Защита: если фото нет, возвращаем на главную
     if (!userImage) {
       navigate('/');
       return;
     }
 
-    // Имитация бурной деятельности ИИ
     const interval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
         }
-        return prev + 1.5; // Скорость загрузки
+        return prev + 2;
       });
-    }, 50);
+    }, 40);
 
     return () => clearInterval(interval);
   }, [userImage, navigate]);
 
-  // Эффект перехода только когда прогресс 100%
+  // Эффект финализации
   useEffect(() => {
-    if (progress >= 100 && userImage && !hasSaved) {
-      setHasSaved(true);
-      setGeneratedImage(userImage);
-      // Auto-save to history
-      addToHistory(userImage, 'Tet 2026 AI Generation');
-      const timer = setTimeout(() => navigate('/result'), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [progress, userImage, setGeneratedImage, navigate, addToHistory, hasSaved]);
+    const finalize = async () => {
+      if (progress >= 100 && userImage && !isFinishing) {
+        setIsFinishing(true);
+        console.log("Generation complete, saving...");
+
+        try {
+          // 1. Оптимизируем изображение перед сохранением (JPG весит в 5-10 раз меньше)
+          const optimizedImage = await compressImage(userImage);
+
+          // 2. Устанавливаем в глобальное состояние (для экрана результата)
+          setGeneratedImage(optimizedImage);
+
+          // 3. Сохраняем в историю (IndexedDB)
+          await addToHistory(optimizedImage, 'Tet 2026 AI Generation');
+
+          console.log("Saved to history, navigating...");
+          // 4. Переход с небольшой задержкой для плавности
+          setTimeout(() => navigate('/result'), 300);
+        } catch (e) {
+          console.error("Finalization error:", e);
+          navigate('/result'); // Даже при ошибке пытаемся показать результат
+        }
+      }
+    };
+
+    finalize();
+  }, [progress, userImage, setGeneratedImage, navigate, addToHistory, isFinishing]);
 
   return (
     <Page className="flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-black">

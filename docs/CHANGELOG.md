@@ -25,9 +25,15 @@
 
 ### Исправлено
 
+- Исправлено зависание на 100% при генерации (стабилизация HistoryContext).
 - Исправлена 404 ошибка для `favicon.ico`.
 - Сборка проекта в режиме ES модулей.
 - Исправлен React Warning: `Cannot update a component while rendering a different component` в модуле генерации.
+
+### Оптимизировано
+
+- **Сжатие истории**: Переход с PNG на JPG (0.8) для локального хранения, что снизило вес базы данных в IndexedDB на 80%.
+- **Stable Context**: Применение memoization (useCallback/useMemo) в HistoryProvider для предотвращения лишних ререндеров.
 
 ## [1.1.0] - 2026-01-29
 

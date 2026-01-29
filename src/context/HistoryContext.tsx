@@ -30,7 +30,6 @@ export const HistoryProvider: React.FC<{ children: React.ReactNode }> = ({ child
             try {
                 const stored = await get<HistoryItem[]>(STORAGE_KEY);
                 if (stored) {
-                    // Sort by newest first
                     setHistory(stored.sort((a, b) => b.timestamp - a.timestamp));
                 }
             } catch (error) {
@@ -42,7 +41,7 @@ export const HistoryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         loadHistory();
     }, []);
 
-    const addToHistory = async (imageData: string, prompt?: string) => {
+    const addToHistory = React.useCallback(async (imageData: string, prompt?: string) => {
         const newItem: HistoryItem = {
             id: Date.now().toString(36) + Math.random().toString(36).substring(2),
             timestamp: Date.now(),
@@ -50,38 +49,41 @@ export const HistoryProvider: React.FC<{ children: React.ReactNode }> = ({ child
             prompt,
         };
 
-        const updatedHistory = [newItem, ...history];
-        setHistory(updatedHistory);
+        setHistory(prev => {
+            const updated = [newItem, ...prev];
+            // Async save to IDB without blocking state update
+            set(STORAGE_KEY, updated).catch(e => console.error('IDB set error:', e));
+            return updated;
+        });
+    }, []);
 
-        // Async save to IDB
-        try {
-            await set(STORAGE_KEY, updatedHistory);
-        } catch (error) {
-            console.error('Failed to save history item:', error);
-        }
-    };
+    const removeFromHistory = React.useCallback(async (id: string) => {
+        setHistory(prev => {
+            const updated = prev.filter(item => item.id !== id);
+            set(STORAGE_KEY, updated).catch(e => console.error('IDB remove error:', e));
+            return updated;
+        });
+    }, []);
 
-    const removeFromHistory = async (id: string) => {
-        const updatedHistory = history.filter(item => item.id !== id);
-        setHistory(updatedHistory);
-        try {
-            await set(STORAGE_KEY, updatedHistory);
-        } catch (error) {
-            console.error('Failed to remove history item:', error);
-        }
-    };
-
-    const clearHistory = async () => {
+    const clearHistory = React.useCallback(async () => {
         setHistory([]);
         try {
             await set(STORAGE_KEY, []);
         } catch (error) {
             console.error('Failed to clear history:', error);
         }
-    };
+    }, []);
+
+    const value = React.useMemo(() => ({
+        history,
+        isLoading,
+        addToHistory,
+        removeFromHistory,
+        clearHistory
+    }), [history, isLoading, addToHistory, removeFromHistory, clearHistory]);
 
     return (
-        <HistoryContext.Provider value={{ history, isLoading, addToHistory, removeFromHistory, clearHistory }}>
+        <HistoryContext.Provider value={value}>
             {children}
         </HistoryContext.Provider>
     );
