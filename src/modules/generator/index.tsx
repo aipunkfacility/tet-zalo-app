@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../context/AppContext';
 import { useHistory } from '../../context/HistoryContext';
+import { polzaApi } from '../../services/polzaApi';
 // Импорт фона для красоты
 import bgImage from '../../assets/bg.webp';
 
@@ -15,6 +16,7 @@ const GeneratorModule = () => {
   const { addToHistory } = useHistory();
   const [progress, setProgress] = useState(0);
   const [isFinishing, setIsFinishing] = useState(false);
+  const [statusText, setStatusText] = useState(t('generator.title'));
 
   // Helper для сжатия изображения (PNG -> JPG)
   const compressImage = (base64: string): Promise<string> => {
@@ -27,14 +29,25 @@ const GeneratorModule = () => {
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0);
-          // Сжимаем до 0.8 качества в JPG
           resolve(canvas.toDataURL('image/jpeg', 0.8));
         } else {
-          resolve(base64); // Fallback
+          resolve(base64);
         }
       };
       img.onerror = () => resolve(base64);
       img.src = base64;
+    });
+  };
+
+  // Помощник для скачивания результата и конвертации в Base64
+  const imageUrlToBase64 = async (url: string): Promise<string> => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
     });
   };
 
@@ -44,48 +57,56 @@ const GeneratorModule = () => {
       return;
     }
 
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 2;
-      });
-    }, 40);
+    const startGeneration = async () => {
+      if (isFinishing) return;
+      setIsFinishing(true);
 
-    return () => clearInterval(interval);
-  }, [userImage, navigate]);
+      try {
+        // 1. Имитируем начало
+        setProgress(10);
 
-  // Эффект финализации
-  useEffect(() => {
-    const finalize = async () => {
-      if (progress >= 100 && userImage && !isFinishing) {
-        setIsFinishing(true);
-        console.log("Generation complete, saving...");
+        // 2. Сжимаем локально
+        const compressed = await compressImage(userImage);
+        setProgress(20);
+        setStatusText(t('generator.preparing'));
 
-        try {
-          // 1. Оптимизируем изображение перед сохранением (JPG весит в 5-10 раз меньше)
-          const optimizedImage = await compressImage(userImage);
+        // 3. Отправляем в Polza AI
+        const requestId = await polzaApi.generateImage(
+          compressed,
+          "Magnificent Tet 2026 portrait, traditional Vietnamese attire, festive red and golden lanterns, cherry blossoms background, cinematic lighting, ultra-realistic"
+        );
+        setProgress(40);
+        setStatusText(t('generator.dreaming'));
 
-          // 2. Устанавливаем в глобальное состояние (для экрана результата)
-          setGeneratedImage(optimizedImage);
+        // 4. Ждем результат (опрос)
+        let pollProgress = 40;
+        const resultUrl = await polzaApi.pollResult(requestId, (status) => {
+          pollProgress = Math.min(pollProgress + 5, 85);
+          setProgress(pollProgress);
+          setStatusText(`${t('generator.dreaming')} (${status})`);
+        });
 
-          // 3. Сохраняем в историю (IndexedDB)
-          await addToHistory(optimizedImage, 'Tet 2026 AI Generation');
+        setProgress(90);
+        setStatusText(t('generator.developing'));
 
-          console.log("Saved to history, navigating...");
-          // 4. Переход с небольшой задержкой для плавности
-          setTimeout(() => navigate('/result'), 300);
-        } catch (e) {
-          console.error("Finalization error:", e);
-          navigate('/result'); // Даже при ошибке пытаемся показать результат
-        }
+        // 5. Конвертируем обратно в base64 для истории и сохранения
+        const finalImage = await imageUrlToBase64(resultUrl);
+
+        setProgress(100);
+        setGeneratedImage(finalImage);
+        await addToHistory(finalImage, 'Tet 2026 AI Generation');
+
+        setTimeout(() => navigate('/result'), 500);
+      } catch (error: any) {
+        console.error("Polza AI Error:", error);
+        setStatusText("Error: " + (error.message || "Failed to generate"));
+        // Возвращаем в камеру через 3 секунды при ошибке
+        setTimeout(() => navigate('/camera'), 3000);
       }
     };
 
-    finalize();
-  }, [progress, userImage, setGeneratedImage, navigate, addToHistory, isFinishing]);
+    startGeneration();
+  }, [userImage, navigate, setGeneratedImage, addToHistory]);
 
   return (
     <Page className="flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-black">
@@ -124,9 +145,9 @@ const GeneratorModule = () => {
           key="magic-text"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-white mb-2 text-center text-shadow"
+          className="text-2xl font-bold text-white mb-2 text-center text-shadow h-20 flex items-center"
         >
-          {t('generator.title')}
+          {statusText}
         </motion.h2>
 
         <motion.p

@@ -4,7 +4,10 @@
     },
     "generator": {
         "title": "AI Magic...",
-        "progress": "{{progress}}%"
+        "progress": "{{progress}}%",
+        "preparing": "Preparing image...",
+        "dreaming": "AI is dreaming...",
+        "developing": "Developing photo..."
     },
     "result": {
         "title": "RESULT",

@@ -4,7 +4,10 @@
     },
     "generator": {
         "title": "Phép thuật AI...",
-        "progress": "{{progress}}%"
+        "progress": "{{progress}}%",
+        "preparing": "Đang chuẩn bị ảnh...",
+        "dreaming": "AI đang mơ mộng...",
+        "developing": "Đang xử lý ảnh..."
     },
     "result": {
         "title": "KẾT QUẢ",
