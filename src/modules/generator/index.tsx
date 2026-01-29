@@ -3,6 +3,7 @@ import { Page, useNavigate } from 'zmp-ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../context/AppContext';
+import { useHistory } from '../../context/HistoryContext';
 // Импорт фона для красоты
 import bgImage from '../../assets/bg.webp';
 
@@ -11,7 +12,9 @@ const GeneratorModule = () => {
   const { t } = useTranslation();
   // Получаем фото пользователя и функцию сохранения результата
   const { userImage, setGeneratedImage } = useAppContext();
+  const { addToHistory } = useHistory();
   const [progress, setProgress] = useState(0);
+  const [hasSaved, setHasSaved] = useState(false);
 
   useEffect(() => {
     // Защита: если фото нет, возвращаем на главную
@@ -36,12 +39,15 @@ const GeneratorModule = () => {
 
   // Эффект перехода только когда прогресс 100%
   useEffect(() => {
-    if (progress >= 100 && userImage) {
+    if (progress >= 100 && userImage && !hasSaved) {
+      setHasSaved(true);
       setGeneratedImage(userImage);
+      // Auto-save to history
+      addToHistory(userImage, 'Tet 2026 AI Generation');
       const timer = setTimeout(() => navigate('/result'), 500);
       return () => clearTimeout(timer);
     }
-  }, [progress, userImage, setGeneratedImage, navigate]);
+  }, [progress, userImage, setGeneratedImage, navigate, addToHistory, hasSaved]);
 
   return (
     <Page className="flex flex-col items-center justify-center min-h-screen relative overflow-hidden bg-black">

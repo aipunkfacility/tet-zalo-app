@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, Page } from 'zmp-ui';
-import { Settings } from 'lucide-react';
+import { Settings, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +17,16 @@ const HomePage = () => {
 
     return (
         <Page className="relative flex flex-col min-h-screen overflow-hidden">
+            {/* Header Controls */}
+            <div className="absolute top-4 right-4 z-20 flex gap-2">
+                <button
+                    onClick={() => navigate('/history')}
+                    className="p-3 bg-white/10 backdrop-blur-md rounded-full text-white border border-white/10 hover:bg-white/20 active:scale-95 transition-all"
+                >
+                    <Clock size={24} />
+                </button>
+            </div>
+
             {/* Фон */}
             <motion.div
                 initial={{ opacity: 0 }}
