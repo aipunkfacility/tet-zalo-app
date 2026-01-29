@@ -1,0 +1,14 @@
+{
+  "app": {
+    "title": "Tết 2026",
+    "headerTitle": "Tết 2026",
+    "headerColor": "#ef4444",
+    "textColor": "white",
+    "statusBar": "transparent",
+    "statusBarColor": "#ef4444",
+    "actionBarHidden": true,
+    "hideAndroidBottomNavigationBar": false,
+    "hideIOSSafeAreaBottom": false
+  },
+  "debug": true
+}

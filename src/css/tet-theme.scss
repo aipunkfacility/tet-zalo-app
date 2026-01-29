@@ -1,0 +1,37 @@
+/* Тема оформления TET 2026 */
+
+// Глобальные настройки
+:root {
+  --zmp-primary-color: #ef4444; /* Красный цвет Tet */
+  --zmp-background-color: #fffbeb; /* Amber-50 */
+}
+
+body {
+  background-color: var(--zmp-background-color);
+  overscroll-behavior: none; /* Отключаем "резинку" скролла на iOS */
+}
+
+// Анимация плавного покачивания (используется в логотипе)
+@keyframes bounce-slow {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-15px); 
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite ease-in-out;
+}
+
+// Обводка текста (для заголовка)
+.text-stroke-white {
+  -webkit-text-stroke: 1px white;
+}
+
+// Утилита для учета безопасной зоны снизу (на iPhone X и новее)
+.safe-area-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}

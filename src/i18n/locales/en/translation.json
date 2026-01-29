@@ -1,0 +1,15 @@
+{
+    "home": {
+        "start": "START NOW"
+    },
+    "generator": {
+        "title": "AI Magic...",
+        "progress": "{{progress}}%"
+    },
+    "result": {
+        "title": "RESULT",
+        "share": "SHARE",
+        "save": "Save",
+        "retry": "Try again"
+    }
+}

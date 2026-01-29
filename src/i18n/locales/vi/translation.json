@@ -1,0 +1,15 @@
+{
+    "home": {
+        "start": "BẮT ĐẦU"
+    },
+    "generator": {
+        "title": "Phép thuật AI...",
+        "progress": "{{progress}}%"
+    },
+    "result": {
+        "title": "KẾT QUẢ",
+        "share": "CHIA SẺ",
+        "save": "Lưu lại",
+        "retry": "Làm lại"
+    }
+}
